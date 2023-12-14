@@ -1,48 +1,25 @@
-// import { useState,useEffect,useCallback } from 'react'
-
-
-// function App() {
-//   const order=[{
-//     id:1,
-//     startDate: 1672506000000,
-//     endDate: 1673024400000,
-//   },{
-//     id:2,
-//     startDate: 1673283600000,
-//     endDate: 1673370000000,
-//   },{
-//     id:3,
-//     startDate: 1673542800000,
-//     endDate: 1674147600000,
-//   }]
-
-//   const count=useCallback(()=>{
-//     for(let i=0;i<order.length;i++){
-//       console.log(order[i].startDate)
-//     }
-//   },[])
-
-//   useEffect(()=>{},[count])
-
-//  return <div></div>
-// }
-
-// export default App
-
-
 import React, { useState } from 'react';
-import { DateRangePicker } from 'react-date-range';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker, DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 
-const PropertyBooking = ({ property, bookProperty }) => {
-  const [selectionRange, setSelectionRange] = useState({
+interface Property {
+  id: number;
+  name: string;
+  bookedRanges: DateRange[];
+}
+
+const PropertyBooking: React.FC<{ property: Property; bookProperty: Function }> = ({
+  property,
+  bookProperty,
+}) => {
+  const [selectionRange, setSelectionRange] = useState<DateRange>({
     startDate: null,
     endDate: null,
     key: 'selection',
   });
 
-  const handleSelect = (ranges) => {
+  const handleSelect = (ranges: any) => {
     setSelectionRange(ranges.selection);
   };
 
@@ -75,27 +52,26 @@ const PropertyBooking = ({ property, bookProperty }) => {
   );
 };
 
-const App = () => {
-  const [properties, setProperties] = useState([
+const App: React.FC = () => {
+  const [properties, setProperties] = useState<Property[]>([
     {
       id: 1,
       name: 'Property 1',
       bookedRanges: [
-        { startDate: '2023-12-15', endDate: '2023-12-17' },  { startDate: '2023-12-20', endDate: '2023-12-22' },
+        { startDate: new Date('2023-12-15'), endDate: new Date('2023-12-17') },
         // Existing booked date ranges...
       ],
     },
     // Add more properties...
   ]);
 
-  const bookProperty = (propertyId, startDate, endDate) => {
+  const bookProperty = (propertyId: number, startDate: Date, endDate: Date): boolean => {
     const propertyIndex = properties.findIndex((prop) => prop.id === propertyId);
-console.log(propertyId)
+
     // Check if the selected date range intersects with already booked ranges
     const isAvailable = properties[propertyIndex].bookedRanges.every(
       (range) =>
-        new Date(startDate) >= new Date(range.endDate) ||
-        new Date(endDate) <= new Date(range.startDate)
+        startDate >= range.endDate || endDate <= range.startDate
     );
 
     if (isAvailable) {
